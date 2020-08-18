@@ -40,29 +40,6 @@ namespace ComitBakery.DAL
             _context.Update(item);
             _context.SaveChanges();
         }
-
-        public void AddBatch(Batch batch) {
-            var item = GetById(batch.InventoryItemId);
-            item.Batches.Add(batch);
-            _context.SaveChanges();
-        }
-
-        public void UpdateBatch(Batch updatedBatch) {
-            var item = GetById(updatedBatch.InventoryItemId);
-            var batch = item.Batches.FirstOrDefault(x => x.Id == updatedBatch.Id);
-            if (updatedBatch.RemainingQuantity > batch.RemainingQuantity) {
-                throw new Exception("Invalid update");
-            }
-            batch.RemainingQuantity = updatedBatch.RemainingQuantity;
-            _context.SaveChanges(); 
-        }
-
-        public void DeleteBatch(Guid Id, Guid batchId) {
-            var item = GetById(Id);
-            var batch = item.Batches.FirstOrDefault(x => x.Id == batchId);
-            batch.IsArchived = true;
-            _context.SaveChanges();
-        }
     }
 }
  
