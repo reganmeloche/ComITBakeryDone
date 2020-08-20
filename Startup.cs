@@ -31,7 +31,7 @@ namespace ComitBakery
         {
             services.AddControllersWithViews();
 
-            string connectionString = "";
+            string connectionString = Configuration.GetConnectionString("DefaultDB");
             services.AddDbContext<InventoryContext>(options => options.UseNpgsql(connectionString));
 
             services.AddScoped<IStoreInventoryItems, EFInventoryStorage>();
@@ -41,6 +41,15 @@ namespace ComitBakery
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Apply migrations
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                using (var context = serviceScope.ServiceProvider.GetService<InventoryContext>())
+                {
+                    context.Database.Migrate();
+                }
+            }
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
